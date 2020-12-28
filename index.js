@@ -14,7 +14,7 @@ client.registry
     .registerGroups([
         ['moderation', 'Commands for moderators to use when moderating'],
         ['fun', 'Miscellaneous fun commands that the average user can use'],
-        ['util', 'Utility commands for the user to use in order to obtain information']
+        ['util', 'Utility commands for the user to use in order to obtain information'],
     ])
     .registerDefaultGroups()
     .registerDefaultCommands()
