@@ -1,0 +1,18 @@
+{
+  "name": "turtybot",
+  "version": "1.0.0",
+  "description": "A discord bot for my discord server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TurtyWurty",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.4.1",
+    "discord.js-commando": "github:discordjs/Commando",
+    "dotenv": "^8.2.0",
+    "random-puppy": "^1.1.0",
+    "superagent": "^6.1.0"
+  }
+}
