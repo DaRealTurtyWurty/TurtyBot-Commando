@@ -29,9 +29,10 @@ client.once('ready', () => {
     client.user.setActivity(`${process.env.PREFIX}help`);
 });
 
-function getRndInteger(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+client.on('guildMemberAdd', member => {
+    client.channels.cache.find(channel => channel.name === "💬general").send(`Welcome to the server ${member}! Make sure to read the rules!`);
+    member.roles.add(member.guild.roles.cache.find(role => role.name === 'Member'));
+});
 
 // Levelling System
 client.on("message", async message => {
