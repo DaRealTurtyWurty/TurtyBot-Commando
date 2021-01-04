@@ -9,6 +9,7 @@
   "author": "TurtyWurty",
   "license": "ISC",
   "dependencies": {
+    "discord-xp": "^1.1.7",
     "discord.js": "^12.4.1",
     "discord.js-commando": "github:discordjs/Commando",
     "dotenv": "^8.2.0",

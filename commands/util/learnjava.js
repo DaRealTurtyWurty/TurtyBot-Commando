@@ -10,7 +10,6 @@ module.exports = class LearnJavaCommand extends Command {
                 memberName: 'learnjava',
                 description: 'Sends useful information about learning java.',
             }
-
         )
     };
 

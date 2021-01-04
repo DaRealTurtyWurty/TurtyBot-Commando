@@ -1,6 +1,10 @@
 const { CommandoClient } = require('discord.js-commando');
+const { MessageEmbed } = require('discord.js');
 const path = require('path');
 require('dotenv').config();
+
+const levels = require('discord-xp');
+levels.setURL(`mongodb+srv://${process.env.PASSWORD}@turtybot.b8ggp.mongodb.net/test`);
 
 const client = new CommandoClient({
     commandPrefix: process.env.PREFIX,
@@ -23,6 +27,23 @@ client.registry
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! (${client.user.id})`);
     client.user.setActivity(`${process.env.PREFIX}help`);
+});
+
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Levelling System
+client.on("message", async message => {
+    if (!message.guild) return;
+    if (message.author.bot) return;
+
+    const randXp = Math.floor(Math.random() * 9) + 1;
+    const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randXp);
+    if (hasLeveledUp) {
+        const user = await levels.fetch(message.author.id, message.guild.id);
+        message.channel.send(new MessageEmbed().setDescription(`Pog Champ, ${message.author} leveled up to level: **${user.level}**. Congrats 🎉!`).setColor("RANDOM"));
+    }
 });
 
 client.on('error', console.error);
