@@ -1,8 +1,20 @@
 const { Command } = require('discord.js-commando');
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, ReactionCollector } = require("discord.js");
 const PouchDB = require("pouchdb");
 const suggestions = new PouchDB("suggestions");
 var suggestionNo = 0;
+
+let reactionFilter = (reaction, user) => {
+    return (reaction.emoji.name == "⬇" || reaction.emoji.name == "⬆");
+};
+
+let doubleBooked = (reactionCache, targetID) => {
+    try {
+        return reactionCache.get("⬇").users.cache.find(user => user.id == targetID) && reactionCache.get("⬆").users.cache.find(user => user.id == targetID);
+    } catch (err) {
+        return false;
+    }
+}
 
 module.exports = class SuggestCommand extends Command {
     constructor(client) {
@@ -65,6 +77,12 @@ module.exports = class SuggestCommand extends Command {
         await suggestionChannel.send(embed).then(m => {
             m.react("⬆");
             m.react("⬇");
+            var filter = m.createReactionCollector(reactionFilter);
+            filter.on('collect', (reaction, reactionCollector) => {
+                //if double react, and not the bot,
+                if (doubleBooked(reaction.message.reactions.cache, reactionCollector.id) && reactionCollector.id != reactionCollector.client.user.id)
+                    reaction.users.remove(reactionCollector.id);
+            });
         });
 
         let completeEmbed = new MessageEmbed()
