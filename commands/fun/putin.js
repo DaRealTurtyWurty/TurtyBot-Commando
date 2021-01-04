@@ -8,7 +8,7 @@ module.exports = class PutinCommand extends Command {
             memberName: "putin",
             aliases: ["wideputin"],
             group: "fun",
-            description: "wide",
+            description: "wide"
         });
     };
 
