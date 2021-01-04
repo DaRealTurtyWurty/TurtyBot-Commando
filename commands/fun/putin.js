@@ -22,7 +22,7 @@ module.exports = class PutinCommand extends Command {
         if (message.author.premiumSince != undefined || message.author.id == process.env.OWNER_ID) {
             return message.channel.send(embed);
         } else {
-            return message.channel.send("This command is only avalible to nitro boosters! p2w ez")
+            return message.channel.send("This command is only available to nitro boosters! Pay2Win!!")
         }
     }
 }
