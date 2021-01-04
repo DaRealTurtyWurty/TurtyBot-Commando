@@ -16,15 +16,6 @@ module.exports = class BanCommand extends Command {
                     prompt: 'What user would you like to ban?',
                     type: 'string'
                 },
-                
-                {
-                    key: 'days',
-                    prompt: 'How many days of messages would you like to delete? (0-7)',
-                    min: 0,
-                    max: 7,
-                    default: 1,
-                    type: "integer"
-                },
 
                 {
                     key: 'reason',
@@ -36,16 +27,16 @@ module.exports = class BanCommand extends Command {
         });
     }
 
-    async run(message, { user }, { reason }, { days }) {
+    async run(message, { user }, { reason }) {
         let userA = this.getUserByName(message, user);
         let member = message.guild.member(userA);
-        if(member.bannable) {
-            message.member.ban({ reason: reason, days: days });
-            message.channel.send(`${userA.name} has been banned from the server! Pog champ!`);
+        if (member.bannable) {
+            member.ban({ reason: reason });
+            message.channel.send(`${member.user.name} has been banned from the server! Pog champ!`);
         }
         else message.channel.send("I cannot ban this user!");
     }
-    
+
     getUserByName(message, name) {
         const user = this.client.users.cache.find(user => user.username == name) || message.guild.members.cache.get(name) || message.mentions.members.first();
         if (!user) {
