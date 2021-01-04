@@ -31,8 +31,9 @@ module.exports = class BanCommand extends Command {
         let userA = this.getUserByName(message, user);
         let member = message.guild.member(userA);
         if (member.bannable) {
-            member.ban({ reason: reason });
-            console.log(userA);
+            member.ban({ reason: reason })
+                .then(userB => console.log(`Banned ${userB.username} from ${message.guild.name}`))
+                .catch(console.error);
             message.channel.send(`${member.user.username} has been banned from the server! Pog champ!`);
         }
         else message.channel.send("I cannot ban this user!");

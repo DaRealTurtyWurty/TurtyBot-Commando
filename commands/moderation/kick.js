@@ -31,7 +31,9 @@ module.exports = class KickCommand extends Command {
         let userA = this.getUserByName(message, user);
         let member = message.guild.member(userA);
         if (member.kickable) {
-            member.kick(reason);
+            member.kick(reason)
+            .then(userB => console.log(`Kicked ${userB.username} from ${message.guild.name}`))
+            .catch(console.error);
             message.channel.send(`${userA.name} has been kicked from the server! Pog champ!`);
         }
         else message.channel.send("I cannot kick this user!");
