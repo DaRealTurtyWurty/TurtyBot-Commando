@@ -35,32 +35,37 @@ module.exports = class MuteCommand extends Command {
         });
     }
 
-    async run(message, { user }, { duration }, { reason }) {
+    async run(message, { user, duration, reason }) {
         let member = this.getUserByName(message, user);
         if (!member) return message.reply('You must provide a valid member to mute!');
 
         let allRoles = member.roles.cache;
+        allRoles.delete('@everyone');
         let muteRole = getMuteRole(message.guild);
 
         if (!muteRole) return message.reply('Cannot find the \'Muted\' role!');
 
         allRoles.forEach(role => {
-            if (role.name !== 'everyone') {
+            if (role.name !== '@everyone') {
                 member.roles.remove(role.id);
             }
         });
 
         member.roles.add(muteRole.id);
         console.log(" " + duration)
-        message.channel.send(`@${member.user.tag} has now been muted for ${ms(ms(duration))}`);
+        message.channel.send(`@${member} has now been muted for ${ms(ms(duration))}`);
 
         setTimeout(function () {
-            allRoles.array.forEach(role => {
-                member.roles.add(role.id);
-            });
-            member.roles.remove(muteRole.id);
-            message.channel.send(`@${member.user.tag} has been unmuted.`);
-        }, ms(time));
+            if (member) {
+                allRoles.forEach(role => {
+                    member.roles.add(role.id);
+                });
+                member.roles.remove(muteRole.id);
+                message.channel.send(`@${member} has been unmuted.`);
+            } else {
+                // Add warn
+            }
+        }, ms(duration)).catch(err => message.channel.send(err));
     }
 
     getUserByName(message, name) {
