@@ -19,6 +19,10 @@ module.exports = class PutinCommand extends Command {
             .setTimestamp()
             .setImage("https://media.tenor.com/images/1f70e6cb05211bc481af145bfe67bc64/tenor.gif");
 
-        message.channel.send(embed);
+            if(message.author.premiumSince != undefined){
+                return message.channel.send(embed);
+            } else {
+                return message.channel.send("This command is only avalible to nitro boosters! p2w ez")
+            }
     }
 }
