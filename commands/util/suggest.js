@@ -34,7 +34,7 @@ module.exports = class SuggestCommand extends Command {
         let args = message.content.split(" ");
         if (!args[0]) return message.reply("You need to actually suggest something, dummy!").then(m => m.delete({ timeout: 15000 }));
 
-        let suggestion = message.content.replace(`${process.env.PREFIX} suggest `, "").replace(`<@${process.env.PREFIX}${message.client.user.id}> suggest `, "");
+        let suggestion = message.content.replace(`${process.env.PREFIX}suggest `, "").replace(`${process.env.PREFIX}<@${message.client.user.id}> suggest `, "").replace(`${process.env.PREFIX}<@!${message.client.user.id}> suggest `, "");
 
         var toAdd = {
             _id: message.id,
