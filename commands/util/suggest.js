@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const { MessageEmbed, ReactionCollector } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const PouchDB = require("pouchdb");
 const suggestions = new PouchDB("suggestions");
 var suggestionNo = 0;
@@ -34,7 +34,7 @@ module.exports = class SuggestCommand extends Command {
         let args = message.content.split(" ");
         if (!args[0]) return message.reply("You need to actually suggest something, dummy!").then(m => m.delete({ timeout: 15000 }));
 
-        let suggestion = message.content.replace("!suggest", "").replace("<@!632281868821200908> suggest", "");
+        let suggestion = message.content.replace(`${process.env.PREFIX} suggest `, "").replace(`<@${process.env.PREFIX}${message.client.user.id}> suggest `, "");
 
         var toAdd = {
             _id: message.id,
@@ -75,8 +75,7 @@ module.exports = class SuggestCommand extends Command {
             .setFooter(message.id);
 
         await suggestionChannel.send(embed).then(m => {
-            m.react("⬆");
-            m.react("⬇");
+            m.react("⬆").then(m.react("⬇")).catch(console.log);
             var filter = m.createReactionCollector(reactionFilter);
             filter.on('collect', (reaction, reactionCollector) => {
                 //if double react, and not the bot,
