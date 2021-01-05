@@ -1,4 +1,83 @@
+/*
+Authored by jojo2357
+Deletes messages in this channel based on many options.
+Notes: 
+****************************************************************
+Deleting a specific number of messages works mostly as intended
+
+Deleting messages after timestamp works as intended a code review
+would be hype to tidy it all up and to add more customized time
+conversion
+****************************************************************
+*/
+
 const { Command } = require('discord.js-commando');
+
+let markedDelete = [];
+
+function addDelete(messageID) {
+    markedDelete.push(messageID);
+    return markedDelete.length >= 100;
+}
+
+function deleteSavedMessages(channel) {
+    if (markedDelete.length == 0)
+        return;
+    if (markedDelete.length == 1)
+        channel.messages.find(msg => msg.id == markedDelete[0]).delete().catch();
+    else if (markedDelete.length > 1)
+        channel.bulkDelete(markedDelete.slice(0, 100)).catch();
+    markedDelete.splice(0, Math.min(100, markedDelete.length));
+}
+
+//use this to get around that pesky 100 message limit
+async function getLotsaMessages(channel, limit) {
+    const sum_messages = [];
+    let last_id;
+
+    while (true) {
+        const options = { limit: 100 };
+        if (last_id) {
+            options.before = last_id;
+        }
+
+        const messages = await channel.messages.fetch(options);
+        sum_messages.push(...messages.array());
+        last_id = messages.last().id;
+
+        if (messages.size != 100 || sum_messages >= limit) {
+            break;
+        }
+    }
+
+    return sum_messages;
+}
+
+async function getLotsaMessagesAfter(channel, time) {
+    const sum_messages = [];
+    let last_id;
+
+    do {
+        const options = { limit: 100 };
+        if (last_id) {
+            options.before = last_id;
+        }
+
+        const messages = await channel.messages.fetch(options);
+        sum_messages.push(...messages.array());
+        last_id = messages.last().id;
+
+        if (messages.size != 100 || sum_messages >= limit) {
+            break;
+        }
+    } while (snowflakeToTimestamp(last_id) > time);
+
+    return sum_messages;
+}
+
+function snowflakeToTimestamp(snowflake) {
+    return (parseInt(snowflake) >> 22) + 142007400000;
+}
 
 //ms to whatever. Note 1 will signify that the given number of messages are to be deleted
 const timeConversions = {
@@ -56,22 +135,39 @@ module.exports = class ClearCommand extends Command {
             if (multiplier == undefined)
                 return message.say(args[1] + " is not a valid unit of time");
         }
-        message.channel.messages.fetch().then(messageList => {
-            if (multiplier == 1) {
-                let deletes = parseInt(args[0]);
+        let startTime = new Date().getTime();
+        let twoWeeksAgo = startTime - 14 * timeConversions.days;
+        if (multiplier == 1)
+            getLotsaMessages(message.channel, parseInt(args[0])).then(messageList => {
+                let deletes = parseInt(args[0]);//keep doing this just in case cache is over zealous
                 messageList.forEach(msg => {
-                    if ((deleteIDs.length == 0 || deleteIDs.includes(msg.author.id)) && deletes-- > 0)
-                        msg.delete().catch();
+                    if (((deleteIDs.length == 0 || deleteIDs.includes(msg.author.id))) && deletes-- > 0)
+                        if (msg.createdTimestamp > twoWeeksAgo)//UNTESTED that the special case will work
+                            if (addDelete(msg.id))
+                                deleteSavedMessages(msg.channel);
+                            else;
+                        else {
+                            msg.delete().catch();
+                        }
                 });
-            } else {
-                let startTime = new Date().getTime();
-                let finishTime = startTime - multiplier * parseInt(args[0]);//.substring(0, args[0].indexOf('d'))
+                deleteSavedMessages(message.channel);
+            });
+        else {
+            let finishTime = startTime - multiplier * parseInt(args[0]);
+            getLotsaMessagesAfter(message.channel, finishTime).then(messageList => {
                 messageList.forEach(msg => {
                     if (msg.createdTimestamp > finishTime && msg.createdTimestamp < startTime && (deleteIDs.length == 0 || deleteIDs.includes(msg.author.id)))
-                        msg.delete().catch();
+                        if (msg.createdTimestamp > twoWeeksAgo)//UNTESTED that the special case will work
+                            if (addDelete(msg.id))
+                                deleteSavedMessages(msg.channel);
+                            else;
+                        else {
+                            msg.delete().catch();
+                        }
                 });
-            }
-        });
-        message.channel.send("Ok").then(msg => msg.delete({ timeout: 10000 }));
+                deleteSavedMessages(message.channel);
+            });
+        }
+        message.channel.send("Ok").then(msg => msg.delete({ timeout: 10000 })).catch();
     }
 }
