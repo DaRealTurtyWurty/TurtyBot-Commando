@@ -49,7 +49,7 @@ client.on("message", async message => {
 
     //watch for polls
     if (message.channel.name.includes("poll")) {
-        PollCommand.makeAndModeratePoll(message, message.content);
+        makeAndModeratePoll(message, message.content);
     }
 });
 

@@ -1,5 +1,3 @@
-//Rn, it only lets you react once.
-
 const { Command } = require('discord.js-commando');
 
 module.exports = class PollCommand extends Command {
@@ -34,16 +32,26 @@ module.exports = class PollCommand extends Command {
 
     static makeAndModeratePoll(message, cleanedPollMessage = "") {
         let emotes = [];
-        const otherRegex = /<:.+?:\d+>/g;
+        const otherRegex = /<?:.+?:\d+>/g;
         const unicodeRegex = /\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]/g;
         emotes = emotes.concat(cleanedPollMessage.match(otherRegex)).concat(cleanedPollMessage.match(unicodeRegex)).filter(emote => emote != null && emote != undefined);
         emotes.sort((a, b) => {
             return cleanedPollMessage.indexOf(a) - cleanedPollMessage.indexOf(b);
         });
+
         emotes.forEach(emote => {
-            message.react(emote);
+            //usually unknown emote causes error, catch it here
+            message.react(emote).catch();
         });
-        const messagestuff = message.createReactionCollector((rection) => emotes.includes(rection.emoji.name));
+
+        for (var i = 0; i < emotes.length; i++)
+            if (emotes[i].includes('>')) {
+                emotes[i] = emotes[i].substring(emotes[i].indexOf(':', 4) + 1, emotes[i].length - 1);
+            }
+
+        const messagestuff = message.createReactionCollector((reaction) => {
+            return (reaction.emoji.id != undefined ? emotes.includes(reaction.emoji.id) : (emotes.includes(reaction.emoji.name)));
+        });
         messagestuff.on('collect', (reaction, reactionCollector) => {
             //if double react, and not the bot,
             const reactions = (reactionCache, targetID) => {
