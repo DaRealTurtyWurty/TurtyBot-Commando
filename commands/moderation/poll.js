@@ -17,17 +17,7 @@ module.exports = class PollCommand extends Command {
 
         let poll = message.content.replace(`${process.env.PREFIX}poll `, "").replace(`${process.env.PREFIX}<@${message.client.user.id}> poll `, "").replace(`${process.env.PREFIX}<@!${message.client.user.id}> poll `, "");
 
-        let pollChannel = message.guild.channels.cache.find(channel => channel.name.includes('poll'));
-
-        if (!pollChannel) {
-            message.channel.send("Error: No poll channel found").then(m => m.delete({ timeout: 15000 })); return;
-        }
-
-        if (pollChannel != message.channel)
-            PollCommand.makeAndModeratePoll(await pollChannel.send(poll), poll);
-        else
-            PollCommand.makeAndModeratePoll(message, poll);
-        message.delete();
+        PollCommand.makeAndModeratePoll(message, poll);
     }
 
     static makeAndModeratePoll(message, cleanedPollMessage = "") {
