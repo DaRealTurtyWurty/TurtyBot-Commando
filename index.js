@@ -1,6 +1,7 @@
 const { CommandoClient } = require('discord.js-commando');
 const { MessageEmbed } = require('discord.js');
 const path = require('path');
+const { makeAndModeratePoll } = require('./commands/moderation/poll.js');
 require('dotenv').config();
 
 const levels = require('discord-xp');
@@ -44,6 +45,11 @@ client.on("message", async message => {
     if (hasLeveledUp) {
         const user = await levels.fetch(message.author.id, message.guild.id);
         message.channel.send(new MessageEmbed().setDescription(`Pog Champ, ${message.author} leveled up to level: **${user.level}**. Congrats 🎉!`).setColor("RANDOM"));
+    }
+
+    //watch for polls
+    if (message.channel.name.includes("poll")) {
+        PollCommand.makeAndModeratePoll(message, message.content);
     }
 });
 
