@@ -2,6 +2,7 @@
 
 - Unmute command (removes 'Muted' role)
 - Warn command (warns will get saved, at 3 warns it will mute for 24 hours, at 5 warns it will kick, at 8 warns it will ban)
+- Revoke/Remove Warn command (removes a warn from the user)
 
 # Editing commands
 
@@ -26,3 +27,16 @@
 # Logging information
 
 - All moderation commands are logged (in 'admin-notices' channel)
+
+# Starboard
+
+- Messages in 'showcases' channel will automatically get a '⭐' reaction from the bot
+- Messages with 'configurable' amount of stars (not including the bot) will get sent to 'starboard' channel with a 'jump' link.
+- Embeds attachment (video/image/gif/url image or video)
+- If message is deleted in 'showcases' (not by a moderator), it will stay in starboard. However if deleted by a moderator (and it knows), then it will be removed from starboard
+- 10 stars = 🌟
+- 15 stars = ✨
+- 20 stars = 💫
+- 25 stars = 🌠
+- 30 stars = 🤩
+- Both messages are saved so that reactions will persist across reloads.
