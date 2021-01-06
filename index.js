@@ -68,11 +68,11 @@ client.on("message", async message => {
     if (message.author.bot) return;
 
     const randXp = Math.floor(Math.random() * 9) + 1;
-    /*const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randXp);
+    const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randXp);
     if (hasLeveledUp) {
         const user = await levels.fetch(message.author.id, message.guild.id);
         message.channel.send(new MessageEmbed().setDescription(`Pog Champ, ${message.author} leveled up to level: **${user.level}**. Congrats 🎉!`).setColor("RANDOM"));
-    }*/
+    }
 
     //watch for polls
     if (message.channel.name.includes("poll")) {
