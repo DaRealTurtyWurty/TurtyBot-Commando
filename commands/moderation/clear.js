@@ -24,7 +24,7 @@ function deleteSavedMessages(channel) {
     if (markedDelete.length == 0)
         return;
     if (markedDelete.length == 1)
-        channel.messages.find(msg => msg.id == markedDelete[0]).delete().catch();
+        channel.messages.cache.find(msg => msg.id == markedDelete[0]).delete().catch();
     else if (markedDelete.length > 1)
         channel.bulkDelete(markedDelete.slice(0, 100)).catch();
     markedDelete.splice(0, Math.min(100, markedDelete.length));
@@ -67,7 +67,7 @@ async function getLotsaMessagesAfter(channel, time) {
         sum_messages.push(...messages.array());
         last_id = messages.last().id;
 
-        if (messages.size != 100 || sum_messages >= limit) {
+        if (messages.size != 100 || sum_messages >= options.limit) {
             break;
         }
     } while (snowflakeToTimestamp(last_id) > time);
@@ -119,7 +119,10 @@ module.exports = class ClearCommand extends Command {
     }
 
     async run(message) {
-        message.delete();
+        if (message.deletable) {
+            message.delete();
+        }
+
         let args = message.content.toLowerCase().replace(`${process.env.PREFIX}clear `, "").replace(`<@${process.env.PREFIX}${message.client.user.id}> clear `, "").split(" ");
         if (!args[0] || Number.isNaN(parseInt(args[0])))
             return;
@@ -168,6 +171,5 @@ module.exports = class ClearCommand extends Command {
                 deleteSavedMessages(message.channel);
             });
         }
-        message.channel.send("Ok").then(msg => msg.delete({ timeout: 10000 })).catch();
     }
 }
