@@ -1,11 +1,30 @@
 const { CommandoClient } = require('discord.js-commando');
 const { MessageEmbed } = require('discord.js');
 const path = require('path');
-const { makeAndModeratePoll } = require('./commands/moderation/poll.js');
+const PollCommand = require('./commands/moderation/poll.js');
 require('dotenv').config();
 
 const levels = require('discord-xp');
 levels.setURL(`mongodb+srv://${process.env.PASSWORD}@turtybot.b8ggp.mongodb.net/test`);
+
+async function fetchChannelMessages(channel) {
+    const sum_messages = [];
+    let last_id;
+
+    while (true) {
+        const options = { limit: 100 };
+        if (last_id) {
+            options.before = last_id;
+        }
+        const messages = await channel.messages.fetch(options);
+        sum_messages.push(...messages.array());
+        last_id = messages.last().id;
+        if (messages.size != 100) {
+            break;
+        }
+    }
+    return sum_messages;
+}
 
 const client = new CommandoClient({
     commandPrefix: process.env.PREFIX,
@@ -28,6 +47,14 @@ client.registry
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! (${client.user.id})`);
     client.user.setActivity(`${process.env.PREFIX}help`);
+    client.channels.cache.each(async (channel) => {
+        if (channel.isText && channel.name.includes('poll')) {
+            (await fetchChannelMessages(channel)).forEach(message => {
+                channel.messages.fetch(message.id);//this is to cache user reactions as well since bulk getting doesnt do this
+                PollCommand.makeAndModeratePoll(message, message.content);
+            });
+        }
+    });
 });
 
 client.on('guildMemberAdd', member => {
@@ -41,15 +68,15 @@ client.on("message", async message => {
     if (message.author.bot) return;
 
     const randXp = Math.floor(Math.random() * 9) + 1;
-    const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randXp);
+    /*const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randXp);
     if (hasLeveledUp) {
         const user = await levels.fetch(message.author.id, message.guild.id);
         message.channel.send(new MessageEmbed().setDescription(`Pog Champ, ${message.author} leveled up to level: **${user.level}**. Congrats 🎉!`).setColor("RANDOM"));
-    }
+    }*/
 
     //watch for polls
     if (message.channel.name.includes("poll")) {
-        makeAndModeratePoll(message, message.content);
+        PollCommand.makeAndModeratePoll(message, message.content);
     }
 });
 

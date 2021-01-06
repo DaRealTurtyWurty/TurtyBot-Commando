@@ -67,7 +67,7 @@ async function getLotsaMessagesAfter(channel, time) {
         sum_messages.push(...messages.array());
         last_id = messages.last().id;
 
-        if (messages.size != 100 || sum_messages >= limit) {
+        if (messages.size != 100) {
             break;
         }
     } while (snowflakeToTimestamp(last_id) > time);
