@@ -23,7 +23,7 @@ function addDelete(messageID) {
 function deleteSavedMessages(channel) {
     if (markedDelete.length == 0)
         return;
-    if (markedDelete.length == 1)
+    if (markedDelete.length == 1 && channel.messages.cache.find(msg => msg.id == markedDelete[0]).deletable)
         channel.messages.cache.find(msg => msg.id == markedDelete[0]).delete().catch();
     else if (markedDelete.length > 1)
         channel.bulkDelete(markedDelete.slice(0, 100)).catch();
@@ -150,7 +150,8 @@ module.exports = class ClearCommand extends Command {
                                 deleteSavedMessages(msg.channel);
                             else;
                         else {
-                            msg.delete().catch();
+                            if (msg.deletable)
+                                msg.delete().catch();
                         }
                 });
                 deleteSavedMessages(message.channel);
@@ -165,7 +166,8 @@ module.exports = class ClearCommand extends Command {
                                 deleteSavedMessages(msg.channel);
                             else;
                         else {
-                            msg.delete().catch();
+                            if (msg.deletable)
+                                msg.delete().catch();
                         }
                 });
                 deleteSavedMessages(message.channel);

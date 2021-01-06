@@ -74,14 +74,9 @@ module.exports = class SuggestCommand extends Command {
             .setDescription(suggestion)
             .setFooter(message.id);
 
-        await suggestionChannel.send(embed).then(m => {
-            m.react("⬆").then(m.react("⬇")).catch(console.log);
-            var filter = m.createReactionCollector(reactionFilter);
-            filter.on('collect', (reaction, reactionCollector) => {
-                //if double react, and not the bot,
-                if (doubleBooked(reaction.message.reactions.cache, reactionCollector.id) && reactionCollector.id != reactionCollector.client.user.id)
-                    reaction.users.remove(reactionCollector.id);
-            });
+        (await suggestionChannel.send(embed)).then(m => {
+            m.react("⬆").then(m.react("⬇")).catch(console.error);
+            SuggestCommand.moderateSuggestions(m);
         });
 
         let completeEmbed = new MessageEmbed()
@@ -96,5 +91,15 @@ module.exports = class SuggestCommand extends Command {
                 message.channel.send("Suggestion ID: " + elements[i].id + ", Suggestion: " + elements[i].doc.suggestion);
             }
         }*/
+    }
+
+    //KNOWN WEAKNESS: does not cache who reacted to old messages, just polices old messages
+    static moderateSuggestions(message) {
+        var filter = message.createReactionCollector(reactionFilter);
+        filter.on('collect', (reaction, reactionCollector) => {
+            //if double react, and not the bot,
+            if (doubleBooked(reaction.message.reactions.cache, reactionCollector.id) && reactionCollector.id != reactionCollector.client.user.id)
+                reaction.users.remove(reactionCollector.id);
+        });
     }
 }

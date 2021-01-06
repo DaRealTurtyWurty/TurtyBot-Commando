@@ -2,6 +2,7 @@ const { CommandoClient } = require('discord.js-commando');
 const { MessageEmbed } = require('discord.js');
 const path = require('path');
 const PollCommand = require('./commands/moderation/poll.js');
+const SuggestCommand = require('./commands/util/suggest.js');
 require('dotenv').config();
 
 const levels = require('discord-xp');
@@ -50,10 +51,14 @@ client.once('ready', () => {
     client.channels.cache.each(async (channel) => {
         if (channel.isText && channel.name.includes('poll')) {
             (await fetchChannelMessages(channel)).forEach(message => {
-                channel.messages.fetch(message.id);//this is to cache user reactions as well since bulk getting doesnt do this
+                channel.messages.fetch(message.id);//this is supposed to cache user reactions as well since bulk getting doesnt do this
                 PollCommand.makeAndModeratePoll(message, message.content);
             });
-        }
+        } else if (channel.isText && channel.name.includes('suggest'))
+            (await fetchChannelMessages(channel)).forEach(message => {
+                channel.messages.fetch(message.id);//this is supposed to cache user reactions as well since bulk getting doesnt do this
+                SuggestCommand.moderateSuggestions(message);
+            });
     });
 });
 
