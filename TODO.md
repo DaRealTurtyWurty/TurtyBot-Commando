@@ -18,7 +18,6 @@
 # Solutions
 
 - Event Solution (https://media.discordapp.net/attachments/665281306426474506/665605979798372392/eventhandler.png)
-- Ability to submit solution (gets sent to 'dev-chat' channel)
 
 # Saving information
 
