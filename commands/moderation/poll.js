@@ -29,21 +29,45 @@ module.exports = class PollCommand extends Command {
             return cleanedPollMessage.indexOf(a) - cleanedPollMessage.indexOf(b);
         });
 
-        emotes.forEach(emote => {
-            //usually unknown emote causes error, catch it here
-            message.react(emote).catch();
-        });
+        if (emotes.length == 0)
+            return;
+        if (emotes.length >= 20)
+            if (new Date().getTime() < message.timestamp + 1000)
+                message.reply("Too many emotes");
+            else
+                return;
 
         for (var i = 0; i < emotes.length; i++)
             if (emotes[i].includes('>')) {
                 emotes[i] = emotes[i].substring(emotes[i].indexOf(':', 4) + 1, emotes[i].length - 1);
             }
 
+        emotes.forEach(async (emote) => {
+            //usually unknown emote causes error, catch it here
+            try {
+                //this is here so that the bot doesnt spend so much time being ratelimited with reactions. Will fail if:
+                //reactions are removed => bot dies => user adds one of the emotes => then bot boots => and user removes reaction
+                if (!message.reactions.cache.find(reaction => (reaction.emoji.id != undefined ? reaction.emoji.id : reaction.emoji.name) == emote))
+                    try {
+                        await message.react(emote);
+                    } catch (err) { }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        if (emotes.length == 1)//its here to just auto react
+            return;
+
+
+
         const messagestuff = message.createReactionCollector((reaction) => {
+            console.log(`detected a ${reaction.emoji.name}`);
             return (reaction.emoji.id != undefined ? emotes.includes(reaction.emoji.id) : (emotes.includes(reaction.emoji.name)));
         });
         messagestuff.on('collect', (reaction, reactionCollector) => {
             //if double react, and not the bot,
+            console.log(`Yup, detected a ${reaction.emoji.name}`);
             const reactions = (reactionCache, targetID) => {
                 var out = [];
                 try {
