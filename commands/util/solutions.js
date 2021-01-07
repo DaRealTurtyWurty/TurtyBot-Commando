@@ -199,6 +199,8 @@ module.exports = class SolutionsCommand extends Command {
                     sendCommunityWiki(message.channel);
                     break;
                 case 'render_text':
+                case 'text_rendering':
+                case 'rendering_text':
                     sendRenderText(message.channel);
                     break;
                 default:
@@ -550,9 +552,9 @@ function sendTooltip(channel) {
 
 function sendRenderText(channel) {
     let embed = new MessageEmbed()
-        .setTitle("Minecraft rendering text on screen")
+        .setTitle("How to render text on the screen.")
         .setColor('RANDOM')
-        .setDescription('```java\n@SubscribeEvent\npublic void renderGameOverlay(RenderGameOverlayEvent.Post event) {\n    Minecraft mc = Minecraft.getInstance();\n    mc.fontRenderer.drawStringWithShadow("Kreds: " + KredsManager.getKreds(), 10, 10, 0xFFFFFF);\n}```')
+        .setDescription('You need to use this `RenderGameOverlayEvent.Post` event. The code is as follows: ```java\n@SubscribeEvent\npublic static void renderGameOverlay(RenderGameOverlayEvent.Post event) {\n    Minecraft mc = Minecraft.getInstance();\n    mc.fontRenderer.drawStringWithShadow("Example Text: " + 5, 10, 10, 0xFFFFFF);\n}```')
         .setFooter("Credits to: jojo2357#1417", 'https://cdn.discordapp.com/avatars/524411594009083933/1ff6d708ec60efe7a07882ec97f2951e.png?size=128');
     channel.send({ embed: embed });
 }
