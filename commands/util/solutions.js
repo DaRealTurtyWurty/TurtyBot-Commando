@@ -203,6 +203,11 @@ module.exports = class SolutionsCommand extends Command {
                 case 'rendering_text':
                     sendRenderText(message.channel);
                     break;
+                case 'eventhandler':
+                case 'eventbus':
+                case 'events':
+                    sendEventBus(message.channel);
+                    break;
                 default:
                     message.channel.send(`${args[1]} is an invalid solution`);
                     break;
@@ -219,6 +224,15 @@ function sendSolutions(channel) {
         'resource_location', '.ds_store', 'update_errors', 'keybinds', 'glfw_error', 'community_wiki', 'events', 'render_text'];
 
     channel.send("**Available Solutions:** `" + solutions.join('`, `') + '`');
+}
+
+function sendEventBus(channel) {
+    let embed = new MessageEmbed()
+        .setTitle("Information on why your event handler may not be working.")
+        .setColor("RANDOM")
+        .setImage("https://media.discordapp.net/attachments/665281306426474506/665605979798372392/eventhandler.png");
+
+    channel.send({ embed: embed })
 }
 
 function sendKeybinds(channel) {
