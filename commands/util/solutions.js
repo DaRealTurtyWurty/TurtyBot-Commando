@@ -198,7 +198,11 @@ module.exports = class SolutionsCommand extends Command {
                 case 'docs_community':
                     sendCommunityWiki(message.channel);
                     break;
-
+                case 'render_text':
+                case 'text_rendering':
+                case 'rendering_text':
+                    sendRenderText(message.channel);
+                    break;
                 case 'eventhandler':
                 case 'eventbus':
                 case 'events':
@@ -217,7 +221,7 @@ function sendSolutions(channel) {
         'transparency_long', 'latest.log', '.get', 'mappings_bot', 'intellij_shortcuts', 'eclipse_shortcuts', 'naming_conventions',
         'github', 'action_result_type', 'durability_craft', 'join_first', 'better_trees', 'recipe_matching', 'register_foliage', '1.16_oregen',
         '3d_armor', 'data_pack_gen', 'missing_license', 'missing_parameters', 'no_protocol', 'obj_not_present', 'gradle_daemon', 'intellij_classpath',
-        'resource_location', '.ds_store', 'update_errors', 'keybinds', 'glfw_error', 'community_wiki', 'events'];
+        'resource_location', '.ds_store', 'update_errors', 'keybinds', 'glfw_error', 'community_wiki', 'events', 'render_text'];
 
     channel.send("**Available Solutions:** `" + solutions.join('`, `') + '`');
 }
@@ -557,6 +561,15 @@ function sendTooltip(channel) {
         .setDescription(`In order to add a tooltip to your item or block item, you must override the \`addInformation\` method.`)
         .addField("An example of a simple tooltip is as follows:", "```java\n@Override\npublic void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {\n    tooltip.add(new StringTextComponent(\"Hold \" + \"\\u00A7e\" + \"Shift\" + \"\\u00A77\" + \" for More Information\"));\n    //\"\\u00A7e\" is a colour code\n    //\"\\u00A77\" is a colour code\n}```", false)
         .addField("An example of a more advanced tooltip is as follows:", "```java\n@Override\npublic void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {\n    if(InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {\n        tooltip.add(new StringTextComponent(\"This is a more advanced description\"));\n    } else {\n        tooltip.add(new StringTextComponent(\"Hold \" + \"\\u00A7e\" + \"Shift\" + \"\\u00A77\" + \" for More Information\"));\n        //\"\\u00A7e\" is a color code\n        //\"\\u00A77\" is a color code\n    }\n}```", false);
+    channel.send({ embed: embed });
+}
+
+function sendRenderText(channel) {
+    let embed = new MessageEmbed()
+        .setTitle("How to render text on the screen.")
+        .setColor('RANDOM')
+        .setDescription('You need to use this `RenderGameOverlayEvent.Post` event. The code is as follows: ```java\n@SubscribeEvent\npublic static void renderGameOverlay(RenderGameOverlayEvent.Post event) {\n    Minecraft mc = Minecraft.getInstance();\n    mc.fontRenderer.drawStringWithShadow("Example Text: " + 5, 10, 10, 0xFFFFFF);\n}```')
+        .setFooter("Credits to: jojo2357#1417", 'https://cdn.discordapp.com/avatars/524411594009083933/1ff6d708ec60efe7a07882ec97f2951e.png?size=128');
     channel.send({ embed: embed });
 }
 

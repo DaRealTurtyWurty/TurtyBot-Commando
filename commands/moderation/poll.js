@@ -59,15 +59,11 @@ module.exports = class PollCommand extends Command {
         if (emotes.length == 1)//its here to just auto react
             return;
 
-
-
         const messagestuff = message.createReactionCollector((reaction) => {
-            console.log(`detected a ${reaction.emoji.name}`);
             return (reaction.emoji.id != undefined ? emotes.includes(reaction.emoji.id) : (emotes.includes(reaction.emoji.name)));
         });
         messagestuff.on('collect', (reaction, reactionCollector) => {
             //if double react, and not the bot,
-            console.log(`Yup, detected a ${reaction.emoji.name}`);
             const reactions = (reactionCache, targetID) => {
                 var out = [];
                 try {
