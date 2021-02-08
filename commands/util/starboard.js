@@ -59,7 +59,7 @@ module.exports = {
             messagestuff.on('collect', (reaction, reactionCollector) => {
                 if (reaction.count >= starThresholds[0][0] && starboardMessage == null)
                     this.createMessage(showcaseMessage, reaction.count).then(msg => {
-                        fs.writeFileSync('./data/starboard_messages.dat', fs.readFileSync('./data/starboard_messages.dat').toString().split('\n').filter(line => !line.includes(data[0])));
+                        fs.writeFileSync('./data/starboard_messages.dat', fs.readFileSync('./data/starboard_messages.dat').toString().split('\n').filter(line => !line.includes(data[0]+","+data[1])).join('\n'));
                         fs.appendFileSync('./data/starboard_messages.dat', '\n' + showcaseMessage.channel.id + "," + showcaseMessage.id + "," + msg.id);
                         starboardMessage = msg;
                     });
@@ -69,7 +69,7 @@ module.exports = {
             messagestuff.on('remove', (reaction, reactionCollector) => {
                 if (reaction.count == starThresholds[0][0] - 1 && starboardMessage != null){
                     starboardMessage.delete();
-                    fs.writeFileSync('./data/starboard_messages.dat', fs.readFileSync('./data/starboard_messages.dat').toString().split('\n').filter(line => !line.includes(data[0])));
+                    fs.writeFileSync('./data/starboard_messages.dat', fs.readFileSync('./data/starboard_messages.dat').toString().split('\n').filter(line => !line.includes(data[0]+","+data[1])).join('\n'));
                     fs.appendFileSync('./data/starboard_messages.dat', '\n' + showcaseMessage.channel.id + "," + showcaseMessage.id + "," + null);
                     starboardMessage = null
                 }else if (reaction.count > starThresholds[0][0])
