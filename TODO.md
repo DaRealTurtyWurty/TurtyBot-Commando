@@ -1,6 +1,6 @@
 # New commands
 
-- Unmute command (removes 'Muted' role)
+- ~~Unmute command (removes 'Muted' role)~~
 - Warn command (warns will get saved, at 3 warns it will mute for 24 hours, at 5 warns it will kick, at 8 warns it will ban)
 - Revoke/Remove Warn command (removes a warn from the user)
 

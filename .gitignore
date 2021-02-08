@@ -1,6 +1,8 @@
 # Important Files
 .env
 suggestions/
+data/
+.vscode/
 
 # Logs
 logs

@@ -30,6 +30,7 @@ module.exports = class SuggestCommand extends Command {
             guildOnly: true
         });
     }
+    
     async run(message) {
         let args = message.content.split(" ");
         if (!args[0]) return message.reply("You need to actually suggest something, dummy!").then(m => m.delete({ timeout: 15000 }));
